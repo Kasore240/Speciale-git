@@ -1,4 +1,4 @@
-### ---- ctsmr ------
+# ctsmr ------
 
 #load librarties
 rm(list=ls())
@@ -7,7 +7,7 @@ library(ggplot2)
 library(ctsmr)
 library("plotrix")
 setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
-####---------Make function to Simulate data using Euler Maruyama sim_OU_EM()-----
+# Make function to Simulate data using Euler Maruyama sim_OU_EM() =========
 
 sim_OU_EM <- function(N.sim, dt.sim, dt.obs, pars,x0){
   
@@ -30,7 +30,7 @@ sim_OU_EM <- function(N.sim, dt.sim, dt.obs, pars,x0){
   )
   l1 <- list(.data=.data,x=x)
   return(l1)}
-####--------------Make function to make new object in org ctsmr OU_ctsmr() ----
+# Make function to make new object in org ctsmr OU_ctsmr() ----
 OU_ctsmr <- function(init_pars,init_lb,init_ub){
   
   model <- ctsm$new()
@@ -74,14 +74,14 @@ dt.sim <-1e-3
 dt.obs <- 1e-2
 x0 <- 3
 
-#### -- call functions ---- 
+# call functions ---- 
 
 l <- sim_OU_EM(N.sim, dt.sim, dt.obs, pars, x0)
 .data <- l$.data
 x <- l$x
 model <- OU_ctsmr(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
 
-#### --- Predict ----- 
+#Predict --- 
 
 # Run the parameter estimation
 fit <- model$estimate(.data)
@@ -92,7 +92,8 @@ summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
 
 
 
-#### ---- test influence of sigma_x  ------
+
+# test influence of sigma_x  ------
 
 theta_n <- matrix(data = NA, nrow=10, ncol =2)
 mu_n <- matrix(data = NA, nrow=10, ncol =2)
@@ -108,7 +109,7 @@ N.sim<-20
 for(j in 1:10){
 pars = c(theta=10, mu=1, sigma_x=noise[j], sigma_y=1e-2)
   
-  #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
+#to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
 init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
 
 for (i in 1:N.sim){
@@ -147,33 +148,37 @@ sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
 
-#### ---- plotting for the 20 sim ----
+  ### plotting for the 20 sim ----
 c <- matrix(data="blue",nrow=21,ncol=1) 
 c[21] <- "red"
+k <- 10
 plotCI(x = 1:21,               # plotrix plot with confidence intervals
-       y = c(parms_org[,1,5],theta_n[1,2]),
-       li = c(parms_org[,1,5],theta_n[1,2]) - (2*c(sd_org[,4,5],sd_mean[5,4])) ,
-       ui = c(parms_org[,1,5],theta_n[1,2]) + (2*c(sd_org[,4,5],sd_mean[5,4])),col = c)
+       y = c(parms_org[,1,k],theta_n[k,2]),
+       li = c(parms_org[,1,k],theta_n[k,2]) - (2*c(sd_org[,4,k],sd_mean[k,4])) ,
+       ui = c(parms_org[,1,k],theta_n[k,2]) + (2*c(sd_org[,4,k],sd_mean[k,4])),col = c)
+title(main= "Theta")
 
 #Mu
 plotCI(x = 1:21,               # plotrix plot with confidence intervals
-       y = c(parms_org[1:20,2],mu_n[1,2]),
-       li = c(parms_org[1:20,2],mu_n[1,2]) - (2*c(sd_org[1:20,3],sd_mean[1,3])) ,
-       ui = c(parms_org[1:20,2],mu_n[1,2]) + (2*c(sd_org[1:20,3],sd_mean[1,3])),col = c)
-
+       y = c(parms_org[,2,k],mu_n[k,2]),
+       li = c(parms_org[,2,k],mu_n[k,2]) - (2*c(sd_org[,3,k],sd_mean[k,3])) ,
+       ui = c(parms_org[,2,k],mu_n[k,2]) + (2*c(sd_org[,3,k],sd_mean[k,3])),col = c)
+title(main= "Mu")
 #sigma_x 
 plotCI(x = 1:21,               # plotrix plot with confidence intervals
-       y = c(parms_org[1:20,3],sig_x_n[1,2]),
-       li = c(parms_org[1:20,3],sig_x_n[1,2]) - exp(2*c(sd_org[1:20,1],sd_mean[1,1])) ,
-       ui = c(parms_org[1:20,3],sig_x_n[1,2]) + exp(2*c(sd_org[1:20,1],sd_mean[1,1])),col = c)
+       y = c(parms_org[,3,k],sig_x_n[k,2]),
+       li = c(parms_org[,3,k],sig_x_n[k,2]) - exp(2*c(sd_org[,1,k],sd_mean[k,1])) ,
+       ui = c(parms_org[,3,k],sig_x_n[k,2]) + exp(2*c(sd_org[,1,k],sd_mean[k,1])),col = c)
+title(main= "Sigma_x")
 
 #sigma_y
 plotCI(x = 1:21,               # plotrix plot with confidence intervals
-       y = c(parms_org[1:20,4],sig_y_n[1,2]),
-       li = c(parms_org[1:20,4],sig_y_n[1,2]) - exp(2*c(sd_org[1:20,2],sd_mean[1,2])) ,
-       ui = c(parms_org[1:20,4],sig_y_n[1,2]) + exp(2*c(sd_org[1:20,2],sd_mean[1,2])),col = c)
+       y = c(parms_org[,4,k],sig_y_n[k,2]),
+       li = c(parms_org[,4,k],sig_y_n[k,2]) - exp(2*c(sd_org[,2,k],sd_mean[k,2])) ,
+       ui = c(parms_org[,4,k],sig_y_n[k,2]) + exp(2*c(sd_org[,2,k],sd_mean[k,2])),col = c)
+title(main= "Sigma_Y")
 
-### ----- plotting after taking mean over the 20 sim ------
+  ### plotting after taking mean over the 20 sim ------
 
 
 
@@ -197,3 +202,115 @@ plotCI(x = noise[1:6],               # plotrix plot with confidence intervals
        y = sig_y_n[1:6,2],
        li = sig_y_n[1:6,2] - exp(2*sd_mean[1:6,2]) ,
        ui = sig_y_n[1:6,2] + exp(2*sd_mean[1:6,2]))
+
+
+# test influence of sigma_y  ------
+
+theta_n <- matrix(data = NA, nrow=10, ncol =2)
+mu_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_x_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_y_n <- matrix(data = NA, nrow=10, ncol =2)
+noise <-  seq(1e-3,4.5,0.49)
+sd_mean <- matrix(data = NA, nrow = 10, ncol = 4)
+set.seed(11)
+parms_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+N.sim<-20
+
+for(j in 1:10){
+  pars = c(theta=10, mu=1, sigma_x=1e-1, sigma_y=noise[j])
+  
+  #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
+  init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
+  
+  for (i in 1:N.sim){
+    
+    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, x0)
+    .data <- l$.data
+    x <- l$x
+    
+    model <- OU_ctsmr(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+    
+    fit <- model$estimate(.data)
+    
+    summ_org <- summary(fit)
+    summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
+    parms_org[i,,j] <- summ_org_exp
+    tmp <- predict(fit)[[1]]
+    sd_org[i,,j] <- fit$sd[2:5]
+    
+  }
+  theta_n[j,1] <- var(parms_org[,1,j]) 
+  theta_n[j,2] <- mean(parms_org[,1,j]) 
+  
+  mu_n[j,1] <- var(parms_org[,2,j]) 
+  mu_n[j,2] <- mean(parms_org[,2,j]) 
+  
+  sig_x_n[j,1] <- var(parms_org[,3,j]) 
+  sig_x_n[j,2] <- mean(parms_org[,3,j])
+  
+  sig_y_n[j,1] <- var(parms_org[,4,j]) 
+  sig_y_n[j,2] <- mean(parms_org[,4,j]) 
+  
+  sd_mean[j,1] <- mean(sd_org[,1,j])
+  sd_mean[j,2] <- mean(sd_org[,2,j])
+  sd_mean[j,3] <- mean(sd_org[,3,j])
+  sd_mean[j,4] <- mean(sd_org[,4,j])
+}
+a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
+
+### plotting for the 20 sim ----
+c <- matrix(data="blue",nrow=21,ncol=1) 
+c[21] <- "red"
+  k <- 10
+  plotCI(x = 1:21,               # plotrix plot with confidence intervals
+         y = c(parms_org[,1,k],theta_n[k,2]),
+         li = c(parms_org[,1,k],theta_n[k,2]) - (2*c(sd_org[,4,k],sd_mean[k,4])) ,
+         ui = c(parms_org[,1,k],theta_n[k,2]) + (2*c(sd_org[,4,k],sd_mean[k,4])),col = c)
+  title(main= "Theta")
+  
+  #Mu
+  plotCI(x = 1:21,               # plotrix plot with confidence intervals
+         y = c(parms_org[,2,k],mu_n[k,2]),
+         li = c(parms_org[,2,k],mu_n[k,2]) - (2*c(sd_org[,3,k],sd_mean[k,3])) ,
+         ui = c(parms_org[,2,k],mu_n[k,2]) + (2*c(sd_org[,3,k],sd_mean[k,3])),col = c)
+  title(main= "Mu")
+  #sigma_x 
+  plotCI(x = 1:21,               # plotrix plot with confidence intervals
+         y = c(parms_org[,3,k],sig_x_n[k,2]),
+         li = c(parms_org[,3,k],sig_x_n[k,2]) - exp(2*c(sd_org[,1,k],sd_mean[k,1])) ,
+         ui = c(parms_org[,3,k],sig_x_n[k,2]) + exp(2*c(sd_org[,1,k],sd_mean[k,1])),col = c)
+  title(main= "Sigma_x")
+  
+  #sigma_y
+  plotCI(x = 1:21,               # plotrix plot with confidence intervals
+         y = c(parms_org[,4,k],sig_y_n[k,2]),
+         li = c(parms_org[,4,k],sig_y_n[k,2]) - exp(2*c(sd_org[,2,k],sd_mean[k,2])) ,
+         ui = c(parms_org[,4,k],sig_y_n[k,2]) + exp(2*c(sd_org[,2,k],sd_mean[k,2])),col = c)
+  title(main= "Sigma_Y")
+  
+  ### plotting after taking mean over the 20 sim ------
+  
+  
+  
+  #theta
+  plotCI(x = noise[1:6],               # plotrix plot with confidence intervals
+         y = theta_n[1:6,2],
+         li = theta_n[1:6,2] - (2*sd_mean[1:6,4]) ,
+         ui = theta_n[1:6,2] + (2*sd_mean[1:6,4]))
+  #Mu
+  plotCI(x = noise[1:6],               # plotrix plot with confidence intervals
+         y = mu_n[1:6,2],
+         li = mu_n[1:6,2] - (2*sd_mean[1:6,3]) ,
+         ui = mu_n[1:6,2] + (2*sd_mean[1:6,3]))
+  #sigma x
+  plotCI(x = noise[1:6],               # plotrix plot with confidence intervals
+         y = sig_x_n[1:6,2],
+         li = sig_x_n[1:6,2] - exp(2*sd_mean[1:6,1]) ,
+         ui = sig_x_n[1:6,2] + exp(2*sd_mean[1:6,1]))
+  #sigma y
+  plotCI(x = noise[1:6],               # plotrix plot with confidence intervals
+         y = sig_y_n[1:6,2],
+         li = sig_y_n[1:6,2] - exp(2*sd_mean[1:6,2]) ,
+         ui = sig_y_n[1:6,2] + exp(2*sd_mean[1:6,2]))
+  
