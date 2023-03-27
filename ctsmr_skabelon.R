@@ -262,7 +262,7 @@ a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
 ### plotting for the 20 sim ----
 c <- matrix(data="blue",nrow=21,ncol=1) 
 c[21] <- "red"
-  k <- 10
+  k <- 5
   plotCI(x = 1:21,               # plotrix plot with confidence intervals
          y = c(parms_org[,1,k],theta_n[k,2]),
          li = c(parms_org[,1,k],theta_n[k,2]) - (2*c(sd_org[,4,k],sd_mean[k,4])) ,
@@ -285,8 +285,8 @@ c[21] <- "red"
   #sigma_y
   plotCI(x = 1:21,               # plotrix plot with confidence intervals
          y = c(parms_org[,4,k],sig_y_n[k,2]),
-         li = c(parms_org[,4,k],sig_y_n[k,2]) - exp(2*c(sd_org[,2,k],sd_mean[k,2])) ,
-         ui = c(parms_org[,4,k],sig_y_n[k,2]) + exp(2*c(sd_org[,2,k],sd_mean[k,2])),col = c)
+         li = c(parms_org[,4,k],sig_y_n[k,2]) - (2*c(sd_org[,2,k],sd_mean[k,2])) ,
+         ui = c(parms_org[,4,k],sig_y_n[k,2]) + (2*c(sd_org[,2,k],sd_mean[k,2])),col = c)
   title(main= "Sigma_Y")
   
   ### plotting after taking mean over the 20 sim ------
