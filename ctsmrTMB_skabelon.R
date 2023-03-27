@@ -86,22 +86,7 @@ dt.sim <-1e-3
 dt.obs <- 1e-2
 x0 <- 3
 
-#### -- call functions ---- 
 
-l <- sim_OU_EM(N.sim, dt.sim, dt.obs, pars, x0)
-.data <- l$.data
-.data
-x <- l$x
-model <- OU_ctsmr(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
-
-#### --- Predict ----- 
-
-# Run the parameter estimation
-fit <- model$estimate(.data)
-
-# See the summary of the estimation
-summ_org <- summary(fit)
-summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
 
 
 
@@ -139,7 +124,7 @@ for (i in 1:N.sim){
   parms_TMB[i,] <- summ_TMB
   sd_TMB[i] <- sqrt(fitTMB$states$sd$prior$x)[101]
 }
-theta_n[j,1] <- var(parms_TMB[,1]) 
+theta_n[j,1] <- var(parms_TMB[,1]) # sæt sd i sted for var
 theta_n[j,2] <- mean(parms_TMB[,1]) 
 
 mu_n[j,1] <- var(parms_TMB[,2]) 

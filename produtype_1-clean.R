@@ -18,7 +18,7 @@ sim_OU_EM <- function(N.sim, dt.sim, dt.obs, pars,x0){
   
   # Extract observations and add noise
   t.obs = seq(0,1,by=dt.obs)
-  y = x[t.sim %in% t.obs] + sqrt(pars[4]) * rnorm(length(t.obs))
+  y = x[t.sim %in% t.obs] + pars[4] * rnorm(length(t.obs))
   
   
   # Create data
@@ -40,7 +40,7 @@ OU_ctsmr <- function(init_pars,init_lb,init_ub){
   model$addObs(y ~ x)
   
   # Set observation equation variances
-  model$setVariance(y ~ exp(logsigma2_y))
+  model$setVariance(y ~ (exp(logsigma2_y))^2)
   
   # Specify parameter initial values and lower/upper bounds in estimation
   model$setParameter(
