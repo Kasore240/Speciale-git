@@ -205,7 +205,7 @@ plotCI(x = noise[1:6],               # plotrix plot with confidence intervals
        ui = sig_y_n[1:6,2] + exp(2*sd_mean[1:6,2]))
 
 
-# ---------------------test influence of sigma_y (skal lige køres igen med rigtig sig_x) ------
+# ---------------------test influence of sigma_y  ------
 
 theta_n <- matrix(data = NA, nrow=10, ncol =2)
 mu_n <- matrix(data = NA, nrow=10, ncol =2)
@@ -217,7 +217,11 @@ set.seed(11)
 parms_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
 sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
 N.sim<-20
+#to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_lb <- c(1e-5, 0, 1e-10, 1e-10, 1)
 
+#to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_ub <- c(50, 5, 10, 10, 100)
 for(j in 1:10){
   pars = c(theta=10, mu=1, sigma_x=1, sigma_y=noise[j])
   
@@ -226,7 +230,7 @@ for(j in 1:10){
   
   for (i in 1:N.sim){
     
-    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, x0)
+    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, 3)
     .data <- l$.data
     x <- l$x
     
@@ -560,7 +564,7 @@ c[21] <- "red"
     
 
       
-#--------------------test influence of x0 start guess  (ikke kørt og gemt )------
+#--------------------test influence of x0 start guess  ------
       
       theta_n <- matrix(data = NA, nrow=10, ncol =2)
       mu_n <- matrix(data = NA, nrow=10, ncol =2)
@@ -574,7 +578,7 @@ c[21] <- "red"
       N.sim<-20
       
       #to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
-      init_lb <- c(-1e-5, 0, 1e-10, 1e-12, -1)
+      init_lb <- c(-1e-5, 0, 1e-10, 1e-12, -1.5)
       
       #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
       init_ub <- c(50, 5, 10, 10, 100)
@@ -694,7 +698,7 @@ sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
 N.sim<-20
 
 #to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
-init_lb <- c(-1e-5, 0, 1e-10, 1e-12, -1)
+init_lb <- c(-1e-5, 0, 1e-11, 1e-12, -1)
 
 #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
 init_ub <- c(50, 5, 10, 10, 100)
