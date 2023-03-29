@@ -5,6 +5,7 @@ rm(list=ls())
 library(ctsmrTMB)
 library(ggplot2)
 library(ctsmr)
+library("plotrix")
 
 setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
 ####---------Make function to Simulate data using Euler Maruyama sim_OU_EM()-----
@@ -70,9 +71,25 @@ OU_ctsmrTMB <- function(init_pars,init_lb,init_ub){
   return(obj)}
 ###### ----- init param ---------------------
 #true parameters 
-pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
 
-#to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
+#### ---- test influence of sigma_x -----
+
+theta_n <- matrix(data = NA, nrow=10, ncol =2)
+mu_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_x_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_y_n <- matrix(data = NA, nrow=10, ncol =2)
+noise <- seq(1e-1,5,0.49)
+sd_mean <- matrix(data = NA, nrow = 10, ncol = 4)
+set.seed(11)
+parms_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+N.sim<-20
+dt.sim <-1e-3
+dt.obs <- 1e-2
+for(j in 1:10){
+pars = c(theta=10, mu=1, sigma_x=noise[j], sigma_y=1e-2)
+  
+  #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
 init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
 
 #to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
@@ -81,58 +98,391 @@ init_lb <- c(1e-5, 0, 1e-10, 1e-10, 1)
 #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
 init_ub <- c(50, 5, 10, 10, 100)
 
-N.sim <- 1000
-dt.sim <-1e-3
-dt.obs <- 1e-2
-x0 <- 3
+for (i in 1:N.sim){
+  l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, 3)
+  .data <- l$.data
+  x <- l$x
+  
+  obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+  
+  fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
+  
+  # Check parameter estimates against truth
+  pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
+  summ_TMB <- (fitTMB$par.fixed) 
+  parms_org[i,,j]  <- summ_TMB
+  sd_org[i,,j] <- fitTMB$sd.fixed
+}
+theta_n[j,1] <- var(parms_org[,1,j]) 
+theta_n[j,2] <- mean(parms_org[,1,j]) 
 
+mu_n[j,1] <- var(parms_org[,2,j]) 
+mu_n[j,2] <- mean(parms_org[,2,j]) 
 
+sig_x_n[j,1] <- var(parms_org[,3,j]) 
+sig_x_n[j,2] <- mean(parms_org[,3,j])
 
+sig_y_n[j,1] <- var(parms_org[,4,j]) 
+sig_y_n[j,2] <- mean(parms_org[,4,j]) 
 
+sd_mean[j,1] <- mean(sd_org[,1,j])
+sd_mean[j,2] <- mean(sd_org[,2,j])
+sd_mean[j,3] <- mean(sd_org[,3,j])
+sd_mean[j,4] <- mean(sd_org[,4,j])
+}
+a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
+save(a_org,parms_org,sd_org,sd_mean,file = "TMB_sigmax_varieret.RData")
 
-#### ---- test influence of sigma_x
+#### ---- test influence of sigma_y ----
 
 theta_n <- matrix(data = NA, nrow=10, ncol =2)
 mu_n <- matrix(data = NA, nrow=10, ncol =2)
 sig_x_n <- matrix(data = NA, nrow=10, ncol =2)
 sig_y_n <- matrix(data = NA, nrow=10, ncol =2)
-noise <- seq(1e-1,5,0.49)
+noise <- noise <-  seq(1e-3,4.5,0.49)
+sd_mean <- matrix(data = NA, nrow = 10, ncol = 4)
+set.seed(11)
+parms_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+N.sim<-20
+dt.sim <-1e-3
+dt.obs <- 1e-2
+
+#to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_lb <- c(1e-5, 0, 1e-10, 1e-10, 1)
+
+#to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_ub <- c(50, 5, 10, 10, 100)
 
 for(j in 1:10){
-pars = c(theta=10, mu=1, sigma_x=noise[j], sigma_y=1e-2)
+  pars = c(theta=10, mu=1, sigma_x=1, sigma_y=noise[j])
   
   #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
-init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
+  init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
+  
+
+  for (i in 1:N.sim){
+    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, 3)
+    .data <- l$.data
+    x <- l$x
+    
+    obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+    
+    fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
+    
+    # Check parameter estimates against truth
+    pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
+    summ_TMB <- (fitTMB$par.fixed) 
+    parms_org[i,,j]  <- summ_TMB
+    sd_org[i,,j] <- fitTMB$sd.fixed
+  }
+  theta_n[j,1] <- var(parms_org[,1,j]) 
+  theta_n[j,2] <- mean(parms_org[,1,j]) 
+  
+  mu_n[j,1] <- var(parms_org[,2,j]) 
+  mu_n[j,2] <- mean(parms_org[,2,j]) 
+  
+  sig_x_n[j,1] <- var(parms_org[,3,j]) 
+  sig_x_n[j,2] <- mean(parms_org[,3,j])
+  
+  sig_y_n[j,1] <- var(parms_org[,4,j]) 
+  sig_y_n[j,2] <- mean(parms_org[,4,j]) 
+  
+  sd_mean[j,1] <- mean(sd_org[,1,j])
+  sd_mean[j,2] <- mean(sd_org[,2,j])
+  sd_mean[j,3] <- mean(sd_org[,3,j])
+  sd_mean[j,4] <- mean(sd_org[,4,j])
+}
+a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
+save(a_org,parms_org,sd_org,sd_mean,file = "TMB_sigmay_varieret.RData")
 
 
+
+
+#### ---- test influence of start guess of mu ----
+
+theta_n <- matrix(data = NA, nrow=10, ncol =2)
+mu_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_x_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_y_n <- matrix(data = NA, nrow=10, ncol =2)
+int_mu <-  seq(0,4.5,0.5)
+sd_mean <- matrix(data = NA, nrow = 10, ncol = 4)
+set.seed(11)
+parms_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
 N.sim<-20
-parms_TMB <- matrix(data=NA,nrow=N.sim,ncol=4)
-sd_TMB <- matrix(data = NA, nrow = N.sim, ncol = 1)
+dt.sim <-1e-3
+dt.obs <- 1e-2
 
+#to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_lb <- c(-1e-5, -1e-5, 1e-10, 1e-12, -1)
 
-for (i in 1:N.sim){
-  l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, x0)
-  .data <- l$.data
-  x <- l$x
+#to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_ub <- c(50, 5, 10, 10, 100)
+
+for(j in 1:10){
+  pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
   
-  obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
-  fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
+  #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
+  init_pars <- c(1, int_mu[j], 1e-1, 1e-1, 10)
   
-  # Check parameter estimates against truth
-  pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
-  summ_TMB <- pars2real(fitTMB$par.fixed) 
-  parms_TMB[i,] <- summ_TMB
-  sd_TMB[i] <- sqrt(fitTMB$states$sd$prior$x)[101]
+  
+  for (i in 1:N.sim){
+    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, 3)
+    .data <- l$.data
+    x <- l$x
+    
+    obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+    
+    fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
+    
+    # Check parameter estimates against truth
+    pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
+    summ_TMB <- (fitTMB$par.fixed) 
+    parms_org[i,,j]  <- summ_TMB
+    sd_org[i,,j] <- fitTMB$sd.fixed
+  }
+  theta_n[j,1] <- var(parms_org[,1,j]) 
+  theta_n[j,2] <- mean(parms_org[,1,j]) 
+  
+  mu_n[j,1] <- var(parms_org[,2,j]) 
+  mu_n[j,2] <- mean(parms_org[,2,j]) 
+  
+  sig_x_n[j,1] <- var(parms_org[,3,j]) 
+  sig_x_n[j,2] <- mean(parms_org[,3,j])
+  
+  sig_y_n[j,1] <- var(parms_org[,4,j]) 
+  sig_y_n[j,2] <- mean(parms_org[,4,j]) 
+  
+  sd_mean[j,1] <- mean(sd_org[,1,j])
+  sd_mean[j,2] <- mean(sd_org[,2,j])
+  sd_mean[j,3] <- mean(sd_org[,3,j])
+  sd_mean[j,4] <- mean(sd_org[,4,j])
 }
-theta_n[j,1] <- var(parms_TMB[,1]) # sæt sd i sted for var
-theta_n[j,2] <- mean(parms_TMB[,1]) 
+a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
+save(a_org,parms_org,sd_org,sd_mean,file = "TMB_init_mu_varieret.RData")
 
-mu_n[j,1] <- var(parms_TMB[,2]) 
-mu_n[j,2] <- mean(parms_TMB[,2]) 
 
-sig_x_n[j,1] <- var(parms_TMB[,3]) 
-sig_x_n[j,2] <- mean(parms_TMB[,3])
+#### ---- test influence of start guess of theta -----
 
-sig_y_n[j,1] <- var(parms_TMB[,4]) 
-sig_y_n[j,2] <- mean(parms_TMB[,4]) 
+theta_n <- matrix(data = NA, nrow=10, ncol =2)
+mu_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_x_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_y_n <- matrix(data = NA, nrow=10, ncol =2)
+int_theta <-  seq(0,18,2)
+sd_mean <- matrix(data = NA, nrow = 10, ncol = 4)
+set.seed(11)
+parms_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+N.sim<-20
+dt.sim <-1e-3
+dt.obs <- 1e-2
+
+#to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_lb <- c(-1e-5, 0, 1e-10, 1e-12, -1)
+
+#to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_ub <- c(50, 5, 10, 10, 100)
+
+for(j in 1:10){
+  pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
+  
+  #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
+  init_pars <- c(int_theta[j], 1.5, 1e-1, 1e-1, 10)
+  
+  
+  for (i in 1:N.sim){
+    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, 3)
+    .data <- l$.data
+    x <- l$x
+    
+    obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+    
+    fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
+    
+    # Check parameter estimates against truth
+    pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
+    summ_TMB <- (fitTMB$par.fixed) 
+    parms_org[i,,j]  <- summ_TMB
+    sd_org[i,,j] <- fitTMB$sd.fixed
+  }
+  theta_n[j,1] <- var(parms_org[,1,j]) 
+  theta_n[j,2] <- mean(parms_org[,1,j]) 
+  
+  mu_n[j,1] <- var(parms_org[,2,j]) 
+  mu_n[j,2] <- mean(parms_org[,2,j]) 
+  
+  sig_x_n[j,1] <- var(parms_org[,3,j]) 
+  sig_x_n[j,2] <- mean(parms_org[,3,j])
+  
+  sig_y_n[j,1] <- var(parms_org[,4,j]) 
+  sig_y_n[j,2] <- mean(parms_org[,4,j]) 
+  
+  sd_mean[j,1] <- mean(sd_org[,1,j])
+  sd_mean[j,2] <- mean(sd_org[,2,j])
+  sd_mean[j,3] <- mean(sd_org[,3,j])
+  sd_mean[j,4] <- mean(sd_org[,4,j])
 }
+a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
+save(a_org,parms_org,sd_org,sd_mean,file = "TMB_init_theta_varieret.RData")
+
+
+
+
+
+#### ---- test influence of start guess of sig_x ----
+
+theta_n <- matrix(data = NA, nrow=10, ncol =2)
+mu_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_x_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_y_n <- matrix(data = NA, nrow=10, ncol =2)
+int_sig_x <-  seq(1e-10,3,0.3)
+sd_mean <- matrix(data = NA, nrow = 10, ncol = 4)
+set.seed(11)
+parms_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+N.sim<-20
+dt.sim <-1e-3
+dt.obs <- 1e-2
+
+#to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_lb <- c(-1e-5, 0, 1e-11, 1e-12, -1)
+
+#to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_ub <- c(50, 5, 10, 10, 100)
+
+for(j in 1:10){
+  pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
+  
+  #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
+  init_pars <- c(1, 1.5, int_sig_x[j], 1e-1, 10)
+  
+  
+  for (i in 1:N.sim){
+    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, 3)
+    .data <- l$.data
+    x <- l$x
+    
+    obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+    
+    fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
+    
+    # Check parameter estimates against truth
+    pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
+    summ_TMB <- (fitTMB$par.fixed) 
+    parms_org[i,,j]  <- summ_TMB
+    sd_org[i,,j] <- fitTMB$sd.fixed
+  }
+  theta_n[j,1] <- var(parms_org[,1,j]) 
+  theta_n[j,2] <- mean(parms_org[,1,j]) 
+  
+  mu_n[j,1] <- var(parms_org[,2,j]) 
+  mu_n[j,2] <- mean(parms_org[,2,j]) 
+  
+  sig_x_n[j,1] <- var(parms_org[,3,j]) 
+  sig_x_n[j,2] <- mean(parms_org[,3,j])
+  
+  sig_y_n[j,1] <- var(parms_org[,4,j]) 
+  sig_y_n[j,2] <- mean(parms_org[,4,j]) 
+  
+  sd_mean[j,1] <- mean(sd_org[,1,j])
+  sd_mean[j,2] <- mean(sd_org[,2,j])
+  sd_mean[j,3] <- mean(sd_org[,3,j])
+  sd_mean[j,4] <- mean(sd_org[,4,j])
+}
+a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
+save(a_org,parms_org,sd_org,sd_mean,file = "TMB_init_sig_x_varieret.RData")
+
+#### ---- test influence of start guess of sig_y ----
+
+theta_n <- matrix(data = NA, nrow=10, ncol =2)
+mu_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_x_n <- matrix(data = NA, nrow=10, ncol =2)
+sig_y_n <- matrix(data = NA, nrow=10, ncol =2)
+int_sig_y <-  seq(1e-5,1,1e-1)
+sd_mean <- matrix(data = NA, nrow = 10, ncol = 4)
+set.seed(11)
+parms_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+sd_org <- array(rep(NaN, 20*4*10), dim=c(20, 4, 10))
+N.sim<-20
+dt.sim <-1e-3
+dt.obs <- 1e-2
+
+#to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_lb <- c(-1e-5, 0, 1e-10, 1e-12, -1)
+
+#to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_ub <- c(50, 5, 10, 10, 100)
+
+for(j in 1:10){
+  pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
+  
+  #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
+  init_pars <- c(1, 1.5,1e-1, int_sig_y[j], 10)
+  
+  
+  for (i in 1:N.sim){
+    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, 3)
+    .data <- l$.data
+    x <- l$x
+    
+    obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+    
+    fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
+    
+    # Check parameter estimates against truth
+    pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
+    summ_TMB <- (fitTMB$par.fixed) 
+    parms_org[i,,j]  <- summ_TMB
+    sd_org[i,,j] <- fitTMB$sd.fixed
+  }
+  theta_n[j,1] <- var(parms_org[,1,j]) 
+  theta_n[j,2] <- mean(parms_org[,1,j]) 
+  
+  mu_n[j,1] <- var(parms_org[,2,j]) 
+  mu_n[j,2] <- mean(parms_org[,2,j]) 
+  
+  sig_x_n[j,1] <- var(parms_org[,3,j]) 
+  sig_x_n[j,2] <- mean(parms_org[,3,j])
+  
+  sig_y_n[j,1] <- var(parms_org[,4,j]) 
+  sig_y_n[j,2] <- mean(parms_org[,4,j]) 
+  
+  sd_mean[j,1] <- mean(sd_org[,1,j])
+  sd_mean[j,2] <- mean(sd_org[,2,j])
+  sd_mean[j,3] <- mean(sd_org[,3,j])
+  sd_mean[j,4] <- mean(sd_org[,4,j])
+}
+a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
+save(a_org,parms_org,sd_org,sd_mean,file = "TMB_init_sig_y_varieret.RData")
+
+
+## plotting ---- 
+c <- matrix(data="blue",nrow=21,ncol=1) 
+c[21] <- "red"
+  k <- 10
+  plotCI(x = 1:21,               # plotrix plot with confidence intervals
+         y = exp(c(parms_org[,1,k],theta_n[k,2])),
+         li = exp(c(parms_org[,1,k],theta_n[k,2]) -(2*c(sd_org[,1,k],sd_mean[k,1]))) ,
+         ui = exp(c(parms_org[,1,k],theta_n[k,2]) + (2*c(sd_org[,1,k],sd_mean[k,1]))),col = c)
+  title(main= "Theta")
+  
+  #Mu
+  plotCI(x = 1:21,               # plotrix plot with confidence intervals
+         y = c(parms_org[,2,k],mu_n[k,2]),
+         li = c(parms_org[,2,k],mu_n[k,2]) - (2*c(sd_org[,2,k],sd_mean[k,2])) ,
+         ui = c(parms_org[,2,k],mu_n[k,2]) + (2*c(sd_org[,2,k],sd_mean[k,2])),col = c)
+  title(main= "Mu")
+  #sigma_x 
+  plotCI(x = 1:21,               # plotrix plot with confidence intervals
+         y = exp(c(parms_org[,3,k],sig_x_n[k,2])),
+         li = exp(c(parms_org[,3,k],sig_x_n[k,2]) - 2*c(sd_org[,3,k],sd_mean[k,3])) ,
+         ui = exp(c(parms_org[,3,k],sig_x_n[k,2]) + 2*c(sd_org[,3,k],sd_mean[k,3])),col = c)
+  title(main= "Sigma_x")
+  
+  #sigma_y
+  plotCI(x = 1:21,               # plotrix plot with confidence intervals
+         y = (c(parms_org[,4,k],sig_y_n[k,2])),
+         li = (c(parms_org[,4,k],sig_y_n[k,2]) - 2*c(sd_org[,4,k],sd_mean[k,4])) ,
+         ui = (c(parms_org[,4,k],sig_y_n[k,2]) + 2*c(sd_org[,4,k],sd_mean[k,4])),col = c)
+  title(main= "Sigma_Y")
