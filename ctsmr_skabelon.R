@@ -382,6 +382,7 @@ c[21] <- "red"
     sd_mean[j,4] <- mean(sd_org[,4,j])
   }
   a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
+  save(a_org,parms_org,sd_org,sd_mean,file = "Init_mu_vari.RData")
   
   ### plotting for the 20 sim ----
   c <- matrix(data="blue",nrow=21,ncol=1) 
