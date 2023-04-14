@@ -61,9 +61,9 @@ OU_ctsmrTMB <- function(init_pars,init_lb,init_ub){
   # Specify parameter initial values and lower/upper bounds in estimation
   obj$add_parameters(
     logtheta ~ log(c(init = init_pars[1], lower=init_lb[1], upper=init_ub[1])),
-    mu ~ c(init=init_pars[2], lower=init_lb[1], upper=init_ub[2]),
-    logsigma_x ~ log(c(init= init_pars[3], lower=init_lb[1], upper=init_ub[3])),
-    logsigma_y ~ log(c(init=init_pars[4], lower=init_lb[1], upper=init_ub[4]))
+    mu ~ c(init=init_pars[2], lower=init_lb[2], upper=init_ub[2]),
+    logsigma_x ~ log(c(init= init_pars[3], lower=init_lb[3], upper=init_ub[3])),
+    logsigma_y ~ log(c(init=init_pars[4], lower=init_lb[4], upper=init_ub[4]))
   )
   # Set initial state mean and covariance
   obj$set_initial_state(3.5, 1e-1*diag(1))
