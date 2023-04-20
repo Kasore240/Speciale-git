@@ -5,7 +5,8 @@ library(ctsmrTMB)
 library(ggplot2)
 library(ctsmr)
 library("plotrix")
-setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
+setwd("/zhome/1e/0/121927/Speciale-git/")
+#setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
 # Make function to Simulate data using Euler Maruyama sim_OU_EM() =========
 
 sim_OU_EM <- function(N.sim, dt.sim, dt.obs, pars,x0){
@@ -105,9 +106,10 @@ for(j in 1:10){
     summ_org <- summary(fit)
     summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
     parms_org[i,,j] <- summ_org_exp
-    tmp <- predict(fit)[[1]]
     sd_org[i,,j] <- fit$sd[2:5]
-    
+    s <-utils::tail(getLoadedDLLs(), 1)
+    dyn.unload(s[[1]][["path"]])
+
   }
   theta_n[j,1] <- var(parms_org[,1,j]) 
   theta_n[j,2] <- mean(parms_org[,1,j]) 
@@ -169,8 +171,9 @@ for(j in 1:10){
     summ_org <- summary(fit)
     summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
     parms_org[i,,j] <- summ_org_exp
-    tmp <- predict(fit)[[1]]
     sd_org[i,,j] <- fit$sd[2:5]
+    s <-utils::tail(getLoadedDLLs(), 1)
+    dyn.unload(s[[1]][["path"]])
     
   }
   theta_n[j,1] <- var(parms_org[,1,j]) 
@@ -235,8 +238,9 @@ for(j in 1:10){
     summ_org <- summary(fit)
     summ_org_exp <- c(fit$xm[5], fit$xm[4], fit$xm[2],fit$xm[3])
     parms_org[i,,j] <- summ_org_exp
-    tmp <- predict(fit)[[1]]
     sd_org[i,,j] <- fit$sd[2:5]
+    s <-utils::tail(getLoadedDLLs(), 1)
+    dyn.unload(s[[1]][["path"]])
     
   }
   theta_n[j,1] <- var(parms_org[,1,j]) 
@@ -300,8 +304,10 @@ for(j in 1:10){
     summ_org <- summary(fit)
     summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
     parms_org[i,,j] <- summ_org_exp
-    tmp <- predict(fit)[[1]]
+
     sd_org[i,,j] <- fit$sd[2:5]
+    s <-utils::tail(getLoadedDLLs(), 1)
+    dyn.unload(s[[1]][["path"]])
     
   }
   theta_n[j,1] <- var(parms_org[,1,j]) 
@@ -367,8 +373,10 @@ for(j in 1:10){
     summ_org <- summary(fit)
     summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
     parms_org[i,,j] <- summ_org_exp
-    tmp <- predict(fit)[[1]]
+
     sd_org[i,,j] <- fit$sd[2:5]
+    s <-utils::tail(getLoadedDLLs(), 1)
+    dyn.unload(s[[1]][["path"]])
     
   }
   theta_n[j,1] <- var(parms_org[,1,j]) 
@@ -433,8 +441,10 @@ for(j in 1:10){
     summ_org <- summary(fit)
     summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
     parms_org[i,,j] <- summ_org_exp
-    tmp <- predict(fit)[[1]]
+
     sd_org[i,,j] <- fit$sd[2:5]
+    s <-utils::tail(getLoadedDLLs(), 1)
+    dyn.unload(s[[1]][["path"]])
     
   }
   theta_n[j,1] <- var(parms_org[,1,j]) 
@@ -499,8 +509,9 @@ for(j in 1:10){
     summ_org <- summary(fit)
     summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
     parms_org[i,,j] <- summ_org_exp
-    tmp <- predict(fit)[[1]]
     sd_org[i,,j] <- fit$sd[2:5]
+    s <-utils::tail(getLoadedDLLs(), 1)
+    dyn.unload(s[[1]][["path"]])
     
   }
   theta_n[j,1] <- var(parms_org[,1,j]) 
@@ -522,4 +533,3 @@ for(j in 1:10){
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
 save(a_org,parms_org,sd_org,sd_mean,file = "init_sigmay_varieret_100.RData")
-
