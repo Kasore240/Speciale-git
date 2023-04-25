@@ -9,7 +9,7 @@ setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
 # Make function to Simulate data using Euler Maruyama sim_OU_EM() =========
 
 sim_OU_EM <- function(N.sim, dt.sim, dt.obs, pars,x0){
-  
+  # pars = c(theta=10, mu=1, sigma_x=1, sigma_y=2e-1)
   t.sim = seq(0,1,by=dt.sim)
   dw = rnorm(length(t.sim)-1,sd=sqrt(dt.sim))
   x = x0
@@ -56,7 +56,7 @@ OU_ctsmr <- function(init_pars,init_lb,init_ub){
   return(model)
 }
 set.seed(001)
-pars = c(theta=10, mu=-1.5, sigma_x=1, sigma_y=2e-1)
+pars = c(theta=10, mu=1, sigma_x=1, sigma_y=2e-1)
 
 N.sim <- 1000
 dt.sim <-1e-3
@@ -70,13 +70,13 @@ x <- l$x
 plot(.data$y,type='l')
 
 #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
-init_pars <- c(3, 6, 1, 1, 10)
+init_pars <- c(3, 3, 1, 1, 10)
 
 #to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
-init_lb <- c(1, -5, 1e-10, 1e-10, 1)
+init_lb <- c(1, 2, 1e-10, 1e-10, 1)
 
 #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
-init_ub <- c(20, 10, 10, 10, 100)
+init_ub <- c(15, 5, 5, 5, 15)
 
 
 model2 <- OU_ctsmr(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
@@ -92,6 +92,7 @@ summary(fit, extended = TRUE)
 sum_ctsr <- summary(fit, extended = TRUE)
 sum_ctsr$coefficients[2:3,'Estimate'] <- exp(sum_ctsr$coefficients[2:3,'Estimate'])
 sum_ctsr$coefficients[3,'Estimate'] <- sqrt(sum_ctsr$coefficients[3,'Estimate'])
+
 #----------------------------------------------------------------
 sum_ctsr$coefficients[,'Estimate'] 
 
@@ -113,6 +114,12 @@ cpgram(.data$residuals)
 #----------------------------------------------------------------
 plot(.data$residuals,type='l')
 
+parsfrompr = c(theta=sum_ctsr$coefficients[5,'Estimate'], mu=sum_ctsr$coefficients[4,'Estimate'], sigma_x=sum_ctsr$coefficients[2,'Estimate'], sigma_y=sum_ctsr$coefficients[3,'Estimate'])
+
+lfp <- sim_OU_EM(N.sim, dt.sim, dt.obs, parsfrompr, sum_ctsr$coefficients[1,'Estimate'])
+.datafp <- lfp$.data
+xfp <- lfp$x
 
 plot(tmp$output$pred$y,type='l',col='red') 
 lines(1:101,.data$y,col='blue')
+lines(1:101,.datafp$y,col='black')

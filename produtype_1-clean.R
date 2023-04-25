@@ -42,16 +42,18 @@ OU_ctsmr <- function(init_pars,init_lb,init_ub){
   # Set observation equation variances
   model$setVariance(y ~ (exp(logsigma2_y))^2)
   
+  model$setParameter(x0 = c(init=init_pars[5],lb=init_lb[5],ub=init_ub[5]))
+  
   # Specify parameter initial values and lower/upper bounds in estimation
   model$setParameter(
-    theta = c(init = init_pars[1], lb=init_lb[1], ub=init_ub[1]),
-    mu = c(init=init_pars[2], lb=init_lb[2], ub=init_ub[2]),
+    logsigma2_y = log(c(init=init_pars[4], lb=init_lb[4], ub=init_ub[4])),
     log_sigma_x = log(c(init= init_pars[3], lb=init_lb[3], ub=init_ub[3])),
-    logsigma2_y = log(c(init=init_pars[4], lb=init_lb[4], ub=init_ub[4]))
+    mu = c(init=init_pars[2], lb=init_lb[2], ub=init_ub[2]),
+    theta = c(init = init_pars[1], lb=init_lb[1], ub=init_ub[1])
   )
   
   # set initial value
-  model$setParameter(x0 = c(init=init_pars[5],lb=init_lb[5],ub=init_ub[5]))
+
   return(model)
 }
 #### ---------------- Function to Make new object in ctsmrTMB OU_ctsmrTMB()----
@@ -85,11 +87,11 @@ OU_ctsmrTMB <- function(init_pars,init_lb,init_ub){
   obj$add_parameters(
     logtheta ~ log(c(init = init_pars[1], lower=init_lb[1], upper=init_ub[1])),
     mu ~ c(init=init_pars[2], lower=init_lb[1], upper=init_ub[2]),
-    logsigma_x ~ log(c(init= init_pars[3], lower=init_lb[1], upper=init_ub[3])),
-    logsigma_y ~ log(c(init=init_pars[4], lower=init_lb[1], upper=init_ub[4]))
+    logsigma_x ~ log(c(init= init_pars[3], lower=init_lb[3], upper=init_ub[3])),
+    logsigma_y ~ log(c(init=init_pars[4], lower=init_lb[4], upper=init_ub[4]))
   )
   # Set initial state mean and covariance
-  obj$set_initial_state(3.5, 1e-1*diag(1))
+  obj$set_initial_state(10, 2*diag(1))
   
   return(obj)}
 
@@ -99,10 +101,10 @@ OU_ctsmrTMB <- function(init_pars,init_lb,init_ub){
 pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
 
 #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
-init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
+init_pars <- c(1, 1.5, 1e-1,1.0e-10, 10)
 
 #to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
-init_lb <- c(1e-5, 0, 1e-10, 1e-10, 1)
+init_lb <- c(1e-5, 0, 1e-10, 1e-11, 1)
 
 #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
 init_ub <- c(50, 5, 10, 10, 100)
@@ -129,6 +131,10 @@ fit <- model$estimate(.data)
 # See the summary of the estimation
 summ_org <- summary(fit)
 summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
+
+fit$sd[2:5]
+ 
+
 
 ####------------------- Predict in ctsmrTMB -------------------
 
