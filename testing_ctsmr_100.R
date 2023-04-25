@@ -104,8 +104,7 @@ for(j in 1:10){
     fit <- model$estimate(.data)
     
     summ_org <- summary(fit)
-    summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
-    parms_org[i,,j] <- summ_org_exp
+    parms_org[i,,j] <- fit$xm[2:5]
     sd_org[i,,j] <- fit$sd[2:5]
     s <-utils::tail(getLoadedDLLs(), 1)
     dyn.unload(s[[1]][["path"]])
@@ -129,7 +128,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "sigmax_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/sigmax_varieret_100.RData")
 
 
 # ---------------------test influence of sigma_y  ------
@@ -169,8 +168,7 @@ for(j in 1:10){
     fit <- model$estimate(.data)
     
     summ_org <- summary(fit)
-    summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
-    parms_org[i,,j] <- summ_org_exp
+    parms_org[i,,j] <- fit$xm[2:5]
     sd_org[i,,j] <- fit$sd[2:5]
     s <-utils::tail(getLoadedDLLs(), 1)
     dyn.unload(s[[1]][["path"]])
@@ -194,7 +192,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "sigmay_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/sigmay_varieret_100.RData")
 
 
 # --------------------test influence of mu start guess  ------
@@ -236,8 +234,7 @@ for(j in 1:10){
     fit <- model$estimate(.data)
     
     summ_org <- summary(fit)
-    summ_org_exp <- c(fit$xm[5], fit$xm[4], fit$xm[2],fit$xm[3])
-    parms_org[i,,j] <- summ_org_exp
+    parms_org[i,,j] <- fit$xm[2:5]
     sd_org[i,,j] <- fit$sd[2:5]
     s <-utils::tail(getLoadedDLLs(), 1)
     dyn.unload(s[[1]][["path"]])
@@ -261,7 +258,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "Init_mu_vari_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/Init_mu_vari_100.RData")
 
 
 # --------------------test influence of theta start guess  ------
@@ -302,8 +299,7 @@ for(j in 1:10){
     fit <- model$estimate(.data)
     
     summ_org <- summary(fit)
-    summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
-    parms_org[i,,j] <- summ_org_exp
+    parms_org[i,,j] <- fit$xm[2:5]
 
     sd_org[i,,j] <- fit$sd[2:5]
     s <-utils::tail(getLoadedDLLs(), 1)
@@ -328,7 +324,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "Init_theta_vari_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/Init_theta_vari_100.RData")
 
 
 #--------------------test influence of x0 start guess  ------
@@ -371,8 +367,7 @@ for(j in 1:10){
     fit <- model$estimate(.data)
     
     summ_org <- summary(fit)
-    summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
-    parms_org[i,,j] <- summ_org_exp
+    parms_org[i,,j] <- fit$xm[2:5]
 
     sd_org[i,,j] <- fit$sd[2:5]
     s <-utils::tail(getLoadedDLLs(), 1)
@@ -397,7 +392,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "init_x0_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/init_x0_varieret_100.RData")
 
 
 # -------------------test influence of sig_x start guess ------
@@ -439,8 +434,7 @@ for(j in 1:10){
     fit <- model$estimate(.data)
     
     summ_org <- summary(fit)
-    summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
-    parms_org[i,,j] <- summ_org_exp
+    parms_org[i,,j] <- fit$xm[2:5]
 
     sd_org[i,,j] <- fit$sd[2:5]
     s <-utils::tail(getLoadedDLLs(), 1)
@@ -466,7 +460,7 @@ for(j in 1:10){
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
 
-save(a_org,parms_org,sd_org,sd_mean,file = "init_sigmax_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/init_sigmax_varieret_100.RData")
 
 # -------------------test influence of sig_y start guess ------
 int_sig_y <-  seq(1e-5,1,1e-1)
@@ -507,8 +501,7 @@ for(j in 1:10){
     fit <- model$estimate(.data)
     
     summ_org <- summary(fit)
-    summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
-    parms_org[i,,j] <- summ_org_exp
+    parms_org[i,,j] <- fit$xm[2:5]
     sd_org[i,,j] <- fit$sd[2:5]
     s <-utils::tail(getLoadedDLLs(), 1)
     dyn.unload(s[[1]][["path"]])
@@ -532,4 +525,4 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "init_sigmay_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/init_sigmay_varieret_100.RData")

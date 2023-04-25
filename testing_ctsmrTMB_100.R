@@ -136,7 +136,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "TMB_sigmax_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/TMB_sigmax_varieret_100.RData")
 
 #### ---- test influence of sigma_y ----
 noise <- noise <-  seq(1e-3,4.5,0.49)
@@ -200,7 +200,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "TMB_sigmay_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/TMB_sigmay_varieret_100.RData")
 
 
 #### ---- test influence of start guess of mu ----
@@ -264,7 +264,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "TMB_init_mu_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/TMB_init_mu_varieret_100.RData")
 
 
 #### ---- test influence of start guess of theta -----
@@ -331,7 +331,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "TMB_init_theta_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/TMB_init_theta_varieret_100.RData")
 
 
 
@@ -375,7 +375,6 @@ for(j in 1:10){
     fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
     
     # Check parameter estimates against truth
-    pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
     summ_TMB <- (fitTMB$par.fixed) 
     parms_org[i,,j]  <- summ_TMB
     sd_org[i,,j] <- fitTMB$sd.fixed
@@ -398,7 +397,7 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "TMB_init_sig_x_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/TMB_init_sig_x_varieret_100.RData")
 
 #### ---- test influence of start guess of sig_y ----
 
@@ -440,7 +439,6 @@ for(j in 1:10){
     fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
     
     # Check parameter estimates against truth
-    pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
     summ_TMB <- (fitTMB$par.fixed) 
     parms_org[i,,j]  <- summ_TMB
     sd_org[i,,j] <- fitTMB$sd.fixed
@@ -463,4 +461,4 @@ for(j in 1:10){
   sd_mean[j,4] <- mean(sd_org[,4,j])
 }
 a_org <- cbind(theta_n,mu_n,sig_x_n,sig_y_n)
-save(a_org,parms_org,sd_org,sd_mean,file = "TMB_init_sig_y_varieret_100.RData")
+save(a_org,parms_org,sd_org,sd_mean,file = "data100/TMB_init_sig_y_varieret_100.RData")
