@@ -1,8 +1,8 @@
 
 library("plotrix")
-CICI <- function(po,index,sd,xscale,p,expbol){
+CICI <- function(po,index,sd,xscale,p){
   confs <- matrix(data = NA, nrow = 10, ncol = 3)
-  for (k in 1:10) {
+  for (k in 2:10) {
       low =(c(po[,index,k]) - (2*c(sd[,index,k])))
       up =(c(po[,index,k]) + (2*c(sd[,index,k])))
     x <- sum(p< up & p> low)
@@ -22,11 +22,11 @@ isx <- c(3,1)
 isy <- c(4,2)
 int_mu <-  seq(0,4.5,0.5)
 
-load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/data100/Init_mu_vari_100.RData")
+load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/data1001/Init_mu_vari_100.RData")
 poOLD <- parms_org
 sdOLD <- sd_org
 
-load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/data100/TMB_init_mu_varieret_100.RData")
+load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/data1001/TMB_init_mu_varieret_100.RData")
 poTMB <- parms_org
 sdTMB <- sd_org
 

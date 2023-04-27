@@ -278,7 +278,7 @@ set.seed(11)
 pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
 
 #to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
-init_lb <- c(1e-5, 0, 1e-10, 1e-10, -1)
+init_lb <- c(-1e-5, 0, 1e-10, 1e-10, -1)
 
 #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
 init_ub <- c(50, 5, 10, 10, 100)
