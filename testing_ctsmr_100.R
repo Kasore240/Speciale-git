@@ -95,7 +95,7 @@ for(j in 1:10){
   
   for (i in 1:N.sim){
     
-    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars, 3)
+    l <- sim_OU_EM(1000, dt.sim, dt.obs, pars,3)
     .data <- l$.data
     x <- l$x
     
