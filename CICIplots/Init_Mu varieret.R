@@ -2,10 +2,10 @@
 library("plotrix")
 CICI <- function(po,index,sd,xscale,p){
   confs <- matrix(data = NA, nrow = 10, ncol = 3)
-  for (k in 2:10) {
+  for (k in 1:10) {
       low =(c(po[,index,k]) - (2*c(sd[,index,k])))
       up =(c(po[,index,k]) + (2*c(sd[,index,k])))
-    x <- sum(p< up & p> low)
+    x <- sum(p< up & p> low,na.rm=T)
     b <- binom.test(x,100,0.95,conf.level = 0.95)
     confs[k,1] <- x/100
     confs[k,2:3] <- b$conf.int
@@ -48,7 +48,7 @@ mtext("Theta when initial guess of mu is changed",side=3,outer=TRUE, line=-1,cex
 
 #lookign at sig x
 par(mfrow=c(2,1))
-CICI(poOLD,isx[2],sdOLD,int_mu,1)
+CICI(poOLD,isx[2],sdOLD,int_mu,log(1))
 title("For Old pack",cex.main=0.8)
 CICI(poTMB,isx[1],sdTMB,int_mu,log(1))
 title("For TMB",cex.main=0.8)
@@ -56,9 +56,9 @@ mtext("Sigma x when initial guess of mu is changed",side=3,outer=TRUE, line=-1,c
 
 #looking at sigy
 par(mfrow=c(2,1))
-CICI(poOLD,isy[2],sdOLD,int_mu,1e-2)
+CICI(poOLD,isy[2],sdOLD,int_mu,log(1e-2))
 title("For Old pack",cex.main=0.8)
-CICI(poTMB,4,sdTMB,int_mu,log(1e-2))
+CICI(poTMB,isy[1],sdTMB,int_mu,log(1e-2))
 title("For TMB",cex.main=0.8)
 mtext("Sigma y when initial guess of mu is changed",side=3,outer=TRUE, line=-1,cex.main=1.5)
 

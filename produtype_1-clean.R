@@ -56,6 +56,37 @@ OU_ctsmr <- function(init_pars,init_lb,init_ub){
 
   return(model)
 }
+
+
+OU_ctsmr <- function(init_pars,init_lb,init_ub){
+  
+  model <- ctsm$new()
+  
+  # Add system equations
+  model$addSystem( dx ~ theta * (mu-x) * dt + exp(log_sigma_x)*dw)
+  
+  # Add observation equations
+  model$addObs(y ~ x)
+  
+  # Set observation equation variances
+  model$setVariance(y ~ (exp(logsigma2_y))^2)
+  
+  # Specify parameter initial values and lower/upper bounds in estimation
+  model$setParameter(
+    theta = c(init = init_pars[1], lb=init_lb[1], ub=init_ub[1]),
+    mu = c(init=init_pars[2], lb=init_lb[2], ub=init_ub[2]),
+    log_sigma_x = log(c(init= init_pars[3], lb=init_lb[3], ub=init_ub[3])),
+    logsigma2_y = log(c(init=init_pars[4], lb=init_lb[4], ub=init_ub[4]))
+  )
+  
+  # set initial value
+  model$setParameter(x0 = c(init=init_pars[5],lb=init_lb[5],ub=init_ub[5]))
+  return(model)
+}
+
+
+
+
 #### ---------------- Function to Make new object in ctsmrTMB OU_ctsmrTMB()----
 OU_ctsmrTMB <- function(init_pars,init_lb,init_ub){
   
@@ -98,13 +129,13 @@ OU_ctsmrTMB <- function(init_pars,init_lb,init_ub){
 
 #### -------------- Change parameters, start guesses and upper/lower bounds ---------
 #true parameters 
-pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
+pars = c(theta=10, mu=1, sigma_x=1, sigma_y=0.491)
 
 #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
-init_pars <- c(1, 1.5, 1e-1,1.0e-10, 10)
+init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
 
 #to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
-init_lb <- c(1e-5, 0, 1e-10, 1e-11, 1)
+init_lb <- c(1e-5, 0, 1e-10, 1e-10, 1)
 
 #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
 init_ub <- c(50, 5, 10, 10, 100)
@@ -114,24 +145,36 @@ dt.sim <-1e-3
 dt.obs <- 1e-2
 x0 <- 3
 
-#### -- call functions ---- 
 
-l <- sim_OU_EM(N.sim, dt.sim, dt.obs, pars, x0)
+noise <-  seq(1e-6,2.5,0.25)
+N.sim <- 100
+dt.sim <-1e-3
+dt.obs <- 1e-2
+
+init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
+
+#to easy change lower bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_lb <- c(1e-5, 0, 1e-10, 1e-10, 1)
+
+#to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
+init_ub <- c(50, 5, 10, 10, 100)
+
+pars = c(theta=10, mu=1, sigma_x=1, sigma_y=noise[5])
+#### -- call functions ---- 
+l <- sim_OU_EM(1000, dt.sim, dt.obs, pars,3)
 .data <- l$.data
-.data
 x <- l$x
 model <- OU_ctsmr(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
 obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
-
 
 ####------------------- Predict in org ctsmr -------------------
 # Run the parameter estimation
 fit <- model$estimate(.data)
 
 # See the summary of the estimation
-summ_org <- summary(fit)
+summary(fit,extended=TRUE)
 summ_org_exp <- c(fit$xm[5], fit$xm[4], exp(fit$xm[2]),(exp(fit$xm[3])))
-
+summ_org_exp
 fit$sd[2:5]
  
 
@@ -140,7 +183,7 @@ fit$sd[2:5]
 
 # Carry out estimation using extended kalman filter method
 fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T)
-
+summary(fitTMB)
 # Check parameter estimates against truth
 pars2real = function(x) c(exp(x[1]),x[2],exp(x[3]),exp(x[4])^2)
 summ_TMB <- pars2real(fitTMB$par.fixed)

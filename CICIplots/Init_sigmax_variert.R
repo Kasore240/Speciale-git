@@ -1,10 +1,10 @@
 library("plotrix")
 CICI <- function(po,index,sd,xscale,p){
   confs <- matrix(data = NA, nrow = 10, ncol = 3)
-  for (k in 2:10) {
+  for (k in 1:10) {
     low =(c(po[,index,k]) - (2*c(sd[,index,k])))
     up =(c(po[,index,k]) + (2*c(sd[,index,k])))
-    x <- sum(p< up & p> low)
+    x <- sum(p< up & p> low,na.rm=T)
     b <- binom.test(x,100,0.95,conf.level = 0.95)
     confs[k,1] <- x/100
     confs[k,2:3] <- b$conf.int
