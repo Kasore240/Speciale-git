@@ -62,3 +62,20 @@ CICI(poTMB,isy[1],sdTMB,int_sig_x,log(1e-2))
 title("For TMB",cex.main=0.8)
 mtext("Sigma y when initial guess of Thetais changed",side=3,outer=TRUE, line=-1,cex.main=1.5)
 
+### count nan/na ----
+#det er den samme for alle parametre jo.
+oi <- 1
+ti <- 3
+nanssd <- matrix(data = NA, nrow = 10,ncol = 2)
+nansp <- nans <- matrix(data = NA, nrow = 10,ncol = 2)
+
+for (i in 1:10){
+  nansp[i,1]<- sum(is.na(poOLD[,oi,i]))
+  nansp[i,2]<- sum(is.na(poOLD[,ti,i]))
+  
+  nanssd[i,1] <- sum(is.na(sdOLD[,oi,i]))
+  nanssd[i,2] <- sum(is.na(sdTMB[,ti,i]))
+  
+}
+nanssd
+nansp
