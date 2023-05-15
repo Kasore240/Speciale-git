@@ -23,7 +23,7 @@ N.sim <- 1000
 dt.sim <-1e-3
 dt.obs <- 1e-2
 x0 <- 3
-sim <- 20
+sim <- 1
 po <- matrix(data = NA, nrow=sim, ncol = 4)
 pt <- matrix(data = NA, nrow=sim, ncol = 4)
 
@@ -40,4 +40,4 @@ fitTMB <- obj$estimate(.data, method="ekf", use.hessian=T,ode.timestep = 1e-4)
 po[i,] <-fit$xm[2:5]
 pt[i,] <- fitTMB$par.fixed
 }
-save(po,pt,file ='fordeling.Rdata')
+#save(po,pt,file ='fordeling.Rdata')

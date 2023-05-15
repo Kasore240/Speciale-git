@@ -4,7 +4,7 @@ sim_OU_EM <- function(N.sim, dt.sim, dt.obs, pars,x0){
   dw = rnorm(length(t.sim)-1,sd=sqrt(dt.sim))
   x = x0
   for(i in 1:(length(t.sim)-1)) {
-    x[i+1] = x[i] + pars[1]*(pars[2]-x[i])*dt.sim + pars[3]*dw[i]*sqrt(x[i])
+    x[i+1] = x[i] + pars[1]*(pars[2]-x[i])*dt.sim + pars[3]*dw[i]
   }
   
   # Extract observations and add noise

@@ -3,21 +3,6 @@ setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
 ####---------Make function to Simulate data using Euler Maruyama sim_OU_EM()-----
 ## Source functions
 sapply(dir("Funktioner",full.names=TRUE), source)
-CICI <- function(po,index,sd,xscale,p){
-  confs <- matrix(data = NA, nrow = 10, ncol = 3)
-  for (k in 1:10) {
-    low =(c(po[,index,k]) - (2*c(sd[,index,k])))
-    up =(c(po[,index,k]) + (2*c(sd[,index,k])))
-   x <- sum(p[k]< up & p[k]> low,na.rm=T)
-    b <- binom.test(x,100,0.95,conf.level = 0.95)
-    confs[k,1] <- x/100
-    confs[k,2:3] <- b$conf.int
-  }
-  
-  plotCI(x=xscale, y= confs[,1],li=confs[,2],ui=confs[,3])
-  abline(h = 0.95, col = "red")
-  
-}
 
 imu <- c(2,3)
 itheta <- c(1,4)
