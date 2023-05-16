@@ -9,7 +9,7 @@ setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
 sapply(dir("Funktioner",full.names=TRUE), source)
 # Parameters -----
 
-N.sim <- 1
+N.sim <- 100
 dt.sim <-1e-3
 dt.obs <- 1e-2
 sx0 <- 2
@@ -67,8 +67,10 @@ for(j in 1:10){
     sd_tmb[i,,j] <- fitTMB$sd.fixed
     
     
-    
   }
+  if (j %% 5==0){
+  plot(i)
+  title('sigma x varieret')}
  
 }
 
@@ -123,7 +125,9 @@ for(j in 1:10){
     sd_tmb[i,,j] <- fitTMB$sd.fixed
     
   }
-
+  if (j %% 5==0){
+    plot(i)
+    title('sigma y varieret')}
 
 }
 save(parms_org,sd_org,sd_tmb,parms_tmb,file = "data100/sigmay_varieret_100.RData")
@@ -180,7 +184,9 @@ for(j in 1:10){
     sd_tmb[i,,j] <- fitTMB$sd.fixed
     
   }
-
+  if (j %% 5==0){
+    plot(i)
+    title('mu start varieret')}
 }
 save(parms_org,sd_org,sd_tmb,parms_tmb,file = "data100/Init_mu_vari_100.RData")
 
@@ -234,6 +240,9 @@ for(j in 1:10){
     sd_tmb[i,,j] <- fitTMB$sd.fixed
     
   }
+  if (j %% 5==0){
+    plot(i)
+    title('theta varieret')}
 }
 save(parms_org,sd_org,sd_tmb,parms_tmb,file = "data100/Init_theta_vari_100.RData")
 
@@ -290,6 +299,9 @@ for(j in 1:10){
     sd_tmb[i,,j] <- fitTMB$sd.fixed
     
   }
+  if (j %% 5==0){
+    plot(i)
+    title('x0 varieret')}
 }
 save(parms_org,sd_org,sd_tmb,parms_tmb,file = "data100/init_x0_varieret_100.RData")
 
@@ -346,6 +358,9 @@ for(j in 1:10){
     
     
   }
+  if (j %% 5==0){
+    plot(i)
+    title('sigma x start varieret')}
 }
 
 save(parms_org,sd_org,sd_tmb,parms_tmb,file = "data100/init_sigmax_varieret_100.RData")
@@ -398,5 +413,9 @@ for(j in 1:10){
     parms_tmb[i,,j]  <- summ_TMB
     sd_tmb[i,,j] <- fitTMB$sd.fixed
     
-  }}
+  }
+  if (j %% 5==0){
+    plot(i)
+    title('sigma y start varieret')}
+  }
 save(parms_org,sd_org,sd_tmb,parms_tmb,file = "data100/init_sigmay_varieret_100.RData")
