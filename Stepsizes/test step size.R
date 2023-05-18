@@ -19,8 +19,8 @@ init_ub <- c(50, 5, 10, 10, 100)
 
 
 N.sim <- 1000
-dt.sim <-1e-5
-dt.obs <- 1e-3
+dt.sim <-1e-2
+dt.obs <- 1e-1
 x0 <- 3
 sx0 <- 2
 yall <- matrix(data=NA,nrow=101,ncol=1000)
@@ -35,7 +35,7 @@ sd_org <- matrix(data = NA, nrow = 100, ncol = 4)
 parms_org_ts <- matrix(data = NA, nrow = 100, ncol = 4)
 sd_org_ts <- matrix(data = NA, nrow = 100, ncol = 4)
 
-for(i in 1:100){
+for(i in 1:10){
   obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub,sx0)
   model <- OU_ctsmr(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
   
@@ -75,24 +75,7 @@ for(i in 1:100){
   s <-utils::tail(getLoadedDLLs(), 1)
   dyn.unload(s[[1]][["path"]])
 }
-hist(parms_tmb[,1])
-hist(parms_tmb_ts[,1])
-hist(parms_tmb[,2])
-hist(parms_tmb_ts[,2])
-hist(parms_tmb[,3])
-hist(parms_tmb_ts[,3])
-hist(parms_tmb[,4])
-hist(parms_tmb_ts[,4])
 
-
-hist(parms_org[,1])
-hist(parms_org_ts[,1])
-hist(parms_org[,2])
-hist(parms_org_ts[,2])
-hist(parms_org[,3])
-hist(parms_org_ts[,3])
-hist(parms_org[,4])
-hist(parms_org_ts[,4])
 
 par(mfrow=c(2,2))
 #theta
@@ -125,3 +108,18 @@ hist(exp(parms_tmb_ts[,4]),main ="TMB - small steps", xlab=expression(paste("Est
 hist(exp(parms_org[,2]),main = "org - big steps", xlab=expression(paste("Estimated ",sigma[y])))
 hist(exp(parms_org_ts[,2]),main = "org - small steps", xlab=expression(paste("Estimated ",sigma[y])))
 mtext(expression(paste('Distribution of ', sigma[y])),side=3,outer=TRUE, line=-1.5,cex.main=1.4)
+
+#save(parms_org,parms_org_ts,sd_org,sd_org_ts,parms_tmb,parms_tmb_ts,sd_tmb,sd_tmb_ts, file = 'Stepsizes/stepsize_100sim.Rdata' )
+
+it <-
+i <- 2
+p <- 1
+(c(sd(exp(parms_tmb[,i])),mean(exp(parms_tmb[,i])),sd(exp(parms_tmb_ts[,i])),mean(exp(parms_tmb_ts[,i]))))
+#coverage 
+
+    low =(c(parms_tmb_ts[,i]) - (2*c(sd_tmb_ts[,i])))
+    up =(c(parms_tmb_ts[,i]) + (2*c(sd_tmb_ts[,i])))
+    x <- sum(p< up & p> low,na.rm=T)
+    b <- binom.test(x,100,0.95,conf.level = 0.95)
+
+
