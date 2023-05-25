@@ -17,10 +17,9 @@ init_lb <- c(1e-5, 0, 1e-10, 1e-10, 1)
 #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
 init_ub <- c(50, 5, 10, 10, 100)
 
-
-N.sim <- 1000
-dt.sim <-1e-2
-dt.obs <- 1e-1
+N.sim <- 1
+dt.sim <-1e-3
+dt.obs <- 1e-2
 x0 <- 3
 sx0 <- 2
 yall <- matrix(data=NA,nrow=101,ncol=1000)
@@ -34,10 +33,10 @@ parms_org <- matrix(data = NA, nrow = 100, ncol = 4)
 sd_org <- matrix(data = NA, nrow = 100, ncol = 4)
 parms_org_ts <- matrix(data = NA, nrow = 100, ncol = 4)
 sd_org_ts <- matrix(data = NA, nrow = 100, ncol = 4)
-
-for(i in 1:10){
-  obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub,sx0)
-  model <- OU_ctsmr(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+obj <- OU_ctsmrTMB(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub,sx0)
+model <- OU_ctsmr(init_pars=init_pars,init_lb=init_lb, init_ub=init_ub)
+for(i in 1:1){
+  
   
   l <- sim_OU_EM(1000, 1e-3, 1e-2, pars,x0)
   .data <- l$.data
