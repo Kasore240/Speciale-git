@@ -76,6 +76,19 @@ plot(int_mu,apply(exp(poOLD[,2,]),2,sd),pch=15, col="red",ylim = c(0.0017,0.0028
 legend("topleft",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
 points(int_mu,apply(exp(poTMB[,4,]),2,sd),col="blue",pch=8)
 
+
+
+#### sigma fordeling 
+#det er den samme for alle parametre jo.
+sigma_stat <- matrix(data = NA, ncol = 3, nrow = 10)
+s <- sdold
+parameter <- 3
+sigma_stat[,1] <- apply(s[,parameter,],2,mean)
+sigma_stat[,2] <- apply(s[,parameter,],2,median)
+sigma_stat[,3] <- apply(s[,parameter,],2,sd)
+View(sigma_stat)
+
+
 ####### cov prob plots --------------
 
 
@@ -114,28 +127,4 @@ title("CtsmrTMB",cex.main=0.8)
 mtext(expression(paste(sigma[y], " when initial guess of ", mu, " is changed")),side=1,outer=TRUE, line=-15,cex.main=1.5)
 
 ### count nan/na ----
-#det er den samme for alle parametre jo.
-oi <- 1
-ti <- 3
-nanssd <- matrix(data = NA, nrow = 10,ncol = 2)
-nansp <- nans <- matrix(data = NA, nrow = 10,ncol = 2)
-
-for (i in 1:10){
-  nansp[i,1]<- sum(is.na(poOLD[,oi,i]))
-  nansp[i,2]<- sum(is.na(poOLD[,ti,i]))
-  
-  nanssd[i,1] <- sum(is.na(sdOLD[,oi,i]))
-  nanssd[i,2] <- sum(is.na(sdTMB[,ti,i]))
-  
-}
-nanssd
-nansp
-apply(sdOLD[,2,],2,sd) # ol 2(7(2),8(1)) og tmb 4(3(1),7(2),8,(1),9(2)) 
-i <- 1
-apply(sdTMB[,i,],2,mean)
-apply(sdTMB[,i,],2,median)
-
-sdOLD[sdOLD[,2,8]>1,2,8]
-sum(sdOLD[,2,]>2)
-test <- sdOLD[(sdOLD[,2,]<2), ]
 
