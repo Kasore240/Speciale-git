@@ -5,12 +5,12 @@ CICI <- function(po,index,sd,xscale,p,v){
   for (k in 1:10) {
     pol <- po[sd[,index,k]<v,index,k]
     sdl <- sd[sd[,index,k]<v,index,k]
-      low =(c(pol) - (2*c(sdl)))
-      up =(c(pol) + (2*c(sdl)))
+      low =(c(pol) - (qt(0.975,length(low))*c(sdl)))
+      up =(c(pol) + (qt(0.975,length(low))*c(sdl)))
     x <- sum(p< up & p> low,na.rm=T)
     
     b <- binom.test(x,length(low),0.95,conf.level = 0.95)
-    confs[k,1] <- x/100
+    confs[k,1] <- x/length(low)
     confs[k,2:3] <- b$conf.int
   }
   
@@ -25,67 +25,69 @@ isx <- c(3,1)
 isy <- c(4,2)
 int_mu <-  seq(0,4.5,0.5)
 
-load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/data100small/Init_mu_vari_100.RData")
+load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/small500/Init_mu_vari_100.RData")
 poOLD <- parms_org
 sdOLD <- sd_org
 
 poTMB <- parms_tmb
 sdTMB <- sd_tmb
 
+apply(is.na(sdOLD[,3,]),2,sum)
+apply(is.na(sdTMB[,3,]),2,sum)
 
 ###### mean and sd of all parms ------------
 #mu
 par(mfrow=c(2,1),mai = c(0.8, 0.8, 0.1, 0.1))
-plot(int_mu,apply((poOLD[,3,]),2,mean),pch=15,col="red",ylab = expression(paste('Mean of estimated vaue of ',mu)),xlab = expression(paste('Initial vale of ', mu)))
-points(int_mu,apply((poTMB[,2,]),2,mean),col="blue",pch=8)
-legend("top",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
+plot(int_mu,apply((poOLD[,3,]),2,mean,na.rm=TRUE),pch=15,col="red",ylab = expression(paste('Mean of estimated vaue of ',mu)),xlab = expression(paste('Initial vale of ', mu)))
+points(int_mu,apply((poTMB[,2,]),2,mean,na.rm=TRUE),col="blue",pch=8)
+legend("top",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 abline(h =1)
 
-plot(int_mu,apply((poOLD[,3,]),2,sd),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',mu)),xlab = expression(paste('Initial vale of ', mu)))
-points(int_mu,apply((poTMB[,2,]),2,sd),col="blue",pch=8)
-legend("top",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
+plot(int_mu,apply((poOLD[,3,]),2,sd,na.rm=TRUE),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',mu)),xlab = expression(paste('Initial vale of ', mu)))
+points(int_mu,apply((poTMB[,2,]),2,sd,na.rm=TRUE),col="blue",pch=8)
+legend("top",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 
 #theta
-plot(int_mu,apply((poOLD[,4,]),2,mean),pch=15,col="red",ylab = expression(paste('Mean of estimated vaue of ',theta)),xlab = expression(paste('Initial vale of ', mu)))
-legend("bottomleft",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
-points(int_mu,apply(exp(poTMB[,1,]),2,mean),col="blue",pch=8)
+plot(int_mu,apply((poOLD[,4,]),2,mean,na.rm=TRUE),pch=15,col="red",ylab = expression(paste('Mean of estimated vaue of ',theta)),xlab = expression(paste('Initial vale of ', mu)))
+legend("bottomleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+points(int_mu,apply(exp(poTMB[,1,]),2,mean,na.rm=TRUE),col="blue",pch=8)
 abline(h =10)
 
-plot(int_mu,apply((poOLD[,4,]),2,sd),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',theta)),xlab = expression(paste('Initial vale of ', mu)))
-legend("topleft",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
-points(int_mu,apply(exp(poTMB[,1,]),2,sd),col="blue",pch=8)
+plot(int_mu,apply((poOLD[,4,]),2,sd,na.rm=TRUE),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',theta)),xlab = expression(paste('Initial vale of ', mu)))
+legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+points(int_mu,apply(exp(poTMB[,1,]),2,sd,na.rm=TRUE),col="blue",pch=8)
 
 #sigx
-plot(int_mu,apply(exp(poOLD[,1,]),2,mean),pch=15,col="red",ylim=c(0.96,1.03),ylab = expression(paste('Mean of estimated vaue of ',sigma[x])),xlab = expression(paste('Initial vale of ', mu)))
-legend("bottomleft",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
-points(int_mu,apply(exp(poTMB[,3,]),2,mean),col="blue",pch=8)
+plot(int_mu,apply(exp(poOLD[,1,]),2,mean,na.rm=TRUE),pch=15,col="red",ylim=c(0.96,1.03),ylab = expression(paste('Mean of estimated vaue of ',sigma[x])),xlab = expression(paste('Initial vale of ', mu)))
+legend("bottomleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+points(int_mu,apply(exp(poTMB[,3,]),2,mean,na.rm=TRUE),col="blue",pch=8)
 abline(h =1)
 
-plot(int_mu,apply(exp(poOLD[,1,]),2,sd),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',sigma[x])),xlab = expression(paste('Initial vale of ', mu)))
-legend("topleft",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
-points(int_mu,apply(exp(poTMB[,3,]),2,sd),col="blue",pch=8)
+plot(int_mu,apply(exp(poOLD[,1,]),2,sd,na.rm=TRUE),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',sigma[x])),xlab = expression(paste('Initial vale of ', mu)))
+legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+points(int_mu,apply(exp(poTMB[,3,]),2,sd,na.rm=TRUE),col="blue",pch=8)
 
 #sigy
 
-plot(int_mu,apply(exp(poOLD[,2,]),2,mean),pch=15,col="red",ylim=c(0.009,0.0103),ylab = expression(paste('Mean of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', mu)))
-legend("bottomleft",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
-points(int_mu,apply(exp(poTMB[,4,]),2,mean),col="blue",pch=8)
+plot(int_mu,apply(exp(poOLD[,2,]),2,mean,na.rm=TRUE),pch=15,col="red",ylim=c(0.009,0.0103),ylab = expression(paste('Mean of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', mu)))
+legend("bottomleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+points(int_mu,apply(exp(poTMB[,4,]),2,mean,na.rm=TRUE),col="blue",pch=8)
 abline(h =0.01)
 
-plot(int_mu,apply(exp(poOLD[,2,]),2,sd),pch=15, col="red",ylim = c(0.0017,0.0028),ylab = expression(paste('Sd of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', mu)))
-legend("topleft",c('Org','TMB'),pch=c(15,8),col=c('red','blue'))
-points(int_mu,apply(exp(poTMB[,4,]),2,sd),col="blue",pch=8)
+plot(int_mu,apply(exp(poOLD[,2,]),2,sd,na.rm=TRUE),pch=15, col="red",ylim = c(0.0017,0.0038),ylab = expression(paste('Sd of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', mu)))
+legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+points(int_mu,apply(exp(poTMB[,4,]),2,sd,na.rm=TRUE),col="blue",pch=8)
 
 
 
 #### sigma fordeling 
 #det er den samme for alle parametre jo.
 sigma_stat <- matrix(data = NA, ncol = 3, nrow = 10)
-s <- sdold
-parameter <- 3
-sigma_stat[,1] <- apply(s[,parameter,],2,mean)
-sigma_stat[,2] <- apply(s[,parameter,],2,median)
-sigma_stat[,3] <- apply(s[,parameter,],2,sd)
+s <- sdOLD
+parameter <- imu[2]
+sigma_stat[,1] <- apply(s[,parameter,],2,mean,na.rm=TRUE)
+sigma_stat[,2] <- apply(s[,parameter,],2,median,na.rm=TRUE)
+sigma_stat[,3] <- apply(s[,parameter,],2,sd,na.rm=TRUE)
 View(sigma_stat)
 
 
@@ -97,7 +99,6 @@ par(mfrow=c(2,2),mai = c(0.8, 0.8, 0.5, 0.1))
 CICI(poOLD,imu[2],sdOLD,int_mu,1,5)
 title("Ctsmr",cex.main=0.8)
 CICI(poTMB,imu[1],sdTMB,int_mu,1,5) 
-xlab(expression(paste("Initial value of "), mu))
 title("CtsmrTMB",cex.main=0.8)
 
 mtext(expression(paste(mu, " when initial guess of ", mu, " is changed")),side=3,outer=TRUE, line=-1.5,cex.main=1.5)
@@ -128,3 +129,18 @@ mtext(expression(paste(sigma[y], " when initial guess of ", mu, " is changed")),
 
 ### count nan/na ----
 
+k<-10
+index<-itheta[2]
+v <- 5
+p <- 1
+pol <- poOLD[sdOLD[,index,k]<v,index,k]
+sdl <- sdOLD[sdOLD[,index,k]<v,index,k]
+low =(c(pol) - (2*c(sdl)))
+up =(c(pol) + (2*c(sdl)))
+x <- sum(p< up & p> low,na.rm=T)
+
+b <- binom.test(x,length(low),0.95,conf.level = 0.95)
+confs[k,1] <- x/500
+confs[k,2:3] <- b$conf.int
+
+qt(0.975,length(low)
