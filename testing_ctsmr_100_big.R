@@ -3,15 +3,15 @@ setwd("/zhome/1e/0/121927/Speciale-git/")
 rm(list=ls())
 library(ctsmrTMB)
 library(ctsmr)
-#setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
+setwd("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git")
 
 ## Source functions
 sapply(dir("Funktioner",full.names=TRUE), source)
 # Parameters -----
 
-N.sim <- 500
-dt.sim <-1e-3
-dt.obs <- 1e-2
+N.sim <- 1
+dt.sim <-1e-5
+dt.obs <- 1e-3
 sx0 <- 2
 
 # ---------------------test influence of sigma_x  ------
@@ -155,10 +155,10 @@ init_lb <- c(-1e-5, 0, 1e-10, 1e-10, -1)
 #to easy change upper bounds  c(theta, mu, sigma_x, sigma_y,x0)
 init_ub <- c(50, 5, 10, 10, 100)
 
-for(j in 1:10){
+for(j in 1:1){
   
   #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
-  init_pars <- c(int_theta[j], 1.5, 1e-1, 1e-1, 10)
+  init_pars <- c(1e-10, 1.5, 1e-1, 1e-1, 10)
   
   for (i in 1:N.sim){
     
@@ -185,9 +185,6 @@ for(j in 1:10){
     sd_tmb[i,,j] <- fitTMB$sd.fixed
     
   }
-  if (j %% 5==0){
-    plot(i)
-    title('theta varieret')}
 }
 save(parms_org,sd_org,sd_tmb,parms_tmb,file = "data100big/Init_theta_vari_100.RData")
 
