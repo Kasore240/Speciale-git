@@ -23,18 +23,16 @@ imu <- c(2,3)
 itheta <- c(1,4)
 isx <- c(3,1)
 isy <- c(4,2)
-int_x0 <-  seq(-1,12.5,1.5)
+int_x0 <-c(-1.0, 0.5, 2.0, 3, 3.5, 5.0, 6.5, 8.0, 9.5, 11.0)
 
-load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/small500/init_x0_varieret_100.RData")
-poOLD <- parms_org
-sdOLD <- sd_org
 
-poTMB <- parms_tmb
-sdTMB <- sd_tmb
+load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/small500/init_x0_varieret_100_C.RData")
 
 apply(is.na(sdOLD[,1,]),2,sum)
 apply(is.na(sdTMB[,1,]),2,sum)
 
+apply((sdOLD[,2,]>2),2,sum)
+apply((sdTMB[,4,]>2),2,sum,na.rm=TRUE)
 
 ###### mean and sd of all parms ------------
 #mu
@@ -46,7 +44,7 @@ abline(h =1)
 
 plot(int_x0,apply((poOLD[,3,]),2,sd),pch=15, col="red",ylim = c(0.09,0.113),ylab = expression(paste('Sd of estimated vaue of ',mu)),xlab = expression(paste('Initial vale of ', x[0])))
 points(int_x0,apply((poTMB[,2,]),2,sd),col="blue",pch=8)
-legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+legend("bottomleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 
 #theta
 plot(int_x0,apply((poOLD[,4,]),2,mean),pch=15,col="red",ylim = c(10,11.5), ylab = expression(paste('Mean of estimated vaue of ',theta)),xlab = expression(paste('Initial vale of ', x[0])))
@@ -83,12 +81,13 @@ points(int_x0,apply(exp(poTMB[,4,]),2,sd),col="blue",pch=8)
 
 #### sigma fordeling 
 #det er den samme for alle parametre jo.
-sigma_stat <- matrix(data = NA, ncol = 3, nrow = 10)
-s <- sdOLD
-parameter <- 4
+sigma_stat <- matrix(data = NA, ncol = 4, nrow = 10)
+s <- sdTMB   #old 2, tmb 4
+parameter <- 1
 sigma_stat[,1] <- apply(s[,parameter,],2,mean)
 sigma_stat[,2] <- apply(s[,parameter,],2,median)
 sigma_stat[,3] <- apply(s[,parameter,],2,sd)
+sigma_stat[,4] <- apply(s[,parameter,],2,mean) -apply(s[,parameter,],2,median)
 View(sigma_stat)
 
 
