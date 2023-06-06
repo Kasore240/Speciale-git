@@ -4,47 +4,47 @@ CICI <- function(po,index,sd,xscale,p,v){
   for (k in 1:10) {
     if (length(p) > 1){ tp <- p[k]}
     else{ tp <- p}
-    
     pol <- po[sd[,index,k]<v,index,k]
     sdl <- sd[sd[,index,k]<v,index,k]
-    low =(c(pol) - (qt(0.975,length( pol ))*c(sdl)))
-    up =(c(pol) + (qt(0.975,length( pol ))*c(sdl)))
+    low =(c(pol) - (qt(0.975,(1000-sum(is.na(pol))))*c(sdl)))
+    up =(c(pol) + (qt(0.975,(1000-sum(is.na(pol))))*c(sdl)))
     x <- sum(tp< up & tp> low,na.rm=T)
     
-    b <- binom.test(x,length(low),0.95,conf.level = 0.95)
-    confs[k,1] <- x/length(low)
+    b <- binom.test(x,(1000-sum(is.na(low))),0.95,conf.level = 0.95)
+    confs[k,1] <- x/(1000-sum(is.na(low)))
     confs[k,2:3] <- b$conf.int
   }
   
-  plotCI(x=xscale, y= confs[,1],li=confs[,2],ui=confs[,3],xlab=expression(paste('Size of ', sigma[y])),ylab="Coverage probability")
+  plotCI(x=xscale, y= confs[,1],li=confs[,2],ui=confs[,3],xlab=expression(paste('Size of ', sigma[x])),ylab="Coverage probability")
   abline(h = 0.95, col = "red")
   
 }
+
 imu <- c(2,3)
 itheta <- c(1,4)
 isx <- c(3,1)
 isy <- c(4,2)
 int_sig_y <- seq(1e-3,4.5,0.49)
 
-load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/small500/sigmay_varieret_100.RData")
-poOLD <- parms_org
-sdOLD <- sd_org
+load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/true data/sigmay_varieret_1000.RData")
+poOLD1 <- parms_org
+sdOLD1 <- sd_org
 
-poTMB <- parms_tmb
-sdTMB <- sd_tmb
+poTMB1 <- parms_tmb
+sdTMB1 <- sd_tmb
 
 apply(is.na(sdOLD[,1,]),2,sum)
 apply(is.na(sdTMB[,1,]),2,sum)
 
-apply((sdOLD1[,1,]>2),2,sum,na.rm=TRUE)
-apply((sdTMB1[,3,]>2),2,sum,na.rm=TRUE)
+apply((sdOLD1[,1,]>10),2,sum,na.rm=TRUE)
+apply((sdTMB1[,3,]>10),2,sum,na.rm=TRUE)
 
 for (i in 1:10){
   for (j in 1:4){
-    sdOLD[sdOLD[,2,i]>2,j,i] <- NA
-    sdTMB[sdTMB[,4,i]>2,j,i] <- NA
-    poOLD[sdOLD[,2,i]>2,j,i] <- NA
-    poTMB[sdTMB[,4,i]>2,j,i] <- NA
+    sdOLD[sdOLD[,1,i]>4,j,i] <- NA
+    sdTMB[sdTMB[,3,i]>4,j,i] <- NA
+    poOLD[sdOLD[,1,i]>4,j,i] <- NA
+    poTMB[sdTMB[,3,i]>4,j,i] <- NA
   }}
 
 
@@ -74,7 +74,7 @@ points(int_sig_y ,apply(exp(poTMB[,1,]),2,sd,na.rm=TRUE),col="blue",pch=8)
 plot(int_sig_y ,apply(exp(poOLD[,1,]),2,mean,na.rm=TRUE),pch=15,col="red",ylim=c(0,5),ylab = expression(paste('Mean of estimated vaue of ',sigma[x])),xlab = expression(paste('Size of ', sigma[y])))
 legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 points(int_sig_y ,apply(exp(poTMB[,3,]),2,mean,na.rm=TRUE),col="blue",pch=8)
-
+abline(h =1)
 
 plot(int_sig_y ,apply(exp(poOLD[,1,]),2,sd,na.rm=TRUE),pch=15, col="red",ylim=c(0,2.7),ylab = expression(paste('Sd of estimated vaue of ',sigma[x])),xlab = expression(paste('Size of ', sigma[y])))
 legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
