@@ -5,12 +5,12 @@ CICI <- function(po,index,sd,xscale,p,v){
   for (k in 1:10) {
     pol <- po[sd[,index,k]<v,index,k]
     sdl <- sd[sd[,index,k]<v,index,k]
-      low =(c(pol) - (qt(0.975,length(low))*c(sdl)))
-      up =(c(pol) + (qt(0.975,length(low))*c(sdl)))
+      low =(c(pol) - (qt(0.975,length(pol))*c(sdl)))
+      up =(c(pol) + (qt(0.975,length(pol))*c(sdl)))
     x <- sum(p< up & p> low,na.rm=T)
     
-    b <- binom.test(x,length(low),0.95,conf.level = 0.95)
-    confs[k,1] <- x/length(low)
+    b <- binom.test(x,length(pol),0.95,conf.level = 0.95)
+    confs[k,1] <- x/length(pol)
     confs[k,2:3] <- b$conf.int
   }
   
@@ -25,7 +25,7 @@ isx <- c(3,1)
 isy <- c(4,2)
 int_mu <-  seq(0,4.5,0.5)
 
-load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/small500/Init_mu_vari_100.RData")
+load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/true data/Init_mu_vari_100.RData")
 poOLD <- parms_org
 sdOLD <- sd_org
 
@@ -35,17 +35,19 @@ sdTMB <- sd_tmb
 apply(is.na(sdOLD[,3,]),2,sum)
 apply(is.na(sdTMB[,3,]),2,sum)
 
+apply((sdOLD[,2,]>2),2,sum,na.rm=TRUE)
+apply((sdTMB[,4,]>2),2,sum,na.rm=TRUE)
 ###### mean and sd of all parms ------------
 #mu
 par(mfrow=c(2,1),mai = c(0.8, 0.8, 0.1, 0.1))
 plot(int_mu,apply((poOLD[,3,]),2,mean,na.rm=TRUE),pch=15,col="red",ylab = expression(paste('Mean of estimated vaue of ',mu)),xlab = expression(paste('Initial vale of ', mu)))
 points(int_mu,apply((poTMB[,2,]),2,mean,na.rm=TRUE),col="blue",pch=8)
-legend("top",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 abline(h =1)
 
 plot(int_mu,apply((poOLD[,3,]),2,sd,na.rm=TRUE),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',mu)),xlab = expression(paste('Initial vale of ', mu)))
 points(int_mu,apply((poTMB[,2,]),2,sd,na.rm=TRUE),col="blue",pch=8)
-legend("top",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 
 #theta
 plot(int_mu,apply((poOLD[,4,]),2,mean,na.rm=TRUE),pch=15,col="red",ylab = expression(paste('Mean of estimated vaue of ',theta)),xlab = expression(paste('Initial vale of ', mu)))
@@ -69,12 +71,12 @@ points(int_mu,apply(exp(poTMB[,3,]),2,sd,na.rm=TRUE),col="blue",pch=8)
 
 #sigy
 
-plot(int_mu,apply(exp(poOLD[,2,]),2,mean,na.rm=TRUE),pch=15,col="red",ylim=c(0.009,0.0103),ylab = expression(paste('Mean of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', mu)))
+plot(int_mu,apply(exp(poOLD[,2,]),2,mean,na.rm=TRUE),pch=15,col="red",ylim = c(0.006,0.011),ylab = expression(paste('Mean of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', mu)))
 legend("bottomleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 points(int_mu,apply(exp(poTMB[,4,]),2,mean,na.rm=TRUE),col="blue",pch=8)
 abline(h =0.01)
 
-plot(int_mu,apply(exp(poOLD[,2,]),2,sd,na.rm=TRUE),pch=15, col="red",ylim = c(0.0017,0.0038),ylab = expression(paste('Sd of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', mu)))
+plot(int_mu,apply(exp(poOLD[,2,]),2,sd,na.rm=TRUE),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', mu)))
 legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 points(int_mu,apply(exp(poTMB[,4,]),2,sd,na.rm=TRUE),col="blue",pch=8)
 
@@ -109,7 +111,7 @@ CICI(poOLD,itheta[2],sdOLD,int_mu,10,5)
 title("Ctsmr",cex.main=0.8)
 CICI(poTMB,itheta[1],sdTMB,int_mu,log(10),5)
 title("CtsmrTMB",cex.main=0.8)
-mtext(expression(paste(theta, " when initial guess of ", mu, " is changed")),side=1,outer=TRUE, line=-15,cex.main=1.5)
+mtext(expression(paste(theta, " when initial guess of ", mu, " is changed")),side=1,outer=TRUE, line=-16,cex.main=1.5)
 
 #lookign at sig x
 par(mfrow=c(2,2))
@@ -123,7 +125,7 @@ mtext(expression(paste(sigma[x], " when initial guess of ", mu, " is changed")),
 #par(mfrow=c(1,2))
 CICI(poOLD,isy[2],sdOLD,int_mu,log(1e-2),1)
 title("Ctsmr",cex.main=0.8)
-CICI(poTMB,isy[1],sdTMB,int_mu,log(1e-2),1)
+CICI(poTMB,isy[1],sdTMB,int_mu,log(1e-2), 1)
 title("CtsmrTMB",cex.main=0.8)
 mtext(expression(paste(sigma[y], " when initial guess of ", mu, " is changed")),side=1,outer=TRUE, line=-15,cex.main=1.5)
 

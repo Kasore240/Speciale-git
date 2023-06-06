@@ -23,10 +23,28 @@ sd_org <- array(rep(NaN, N.sim*4*10), dim=c(N.sim, 4, 10))
 
 parms_tmb <- array(rep(NaN, N.sim*4*10), dim=c(N.sim, 4, 10))
 sd_tmb <- array(rep(NaN, N.sim*4*10), dim=c(N.sim, 4, 10))
+pars = c(theta=10, mu=1, sigma_x=1, sigma_y=1e-2)
 
-set.seed(11)
-
-
+l <- sim_OU_EM(1000, dt.sim, dt.obs, pars,3)
+.data <- l$.data
+x <- l$x
+ plot(.data$t,.data$y,type = "l",xlab = "t",ylab = expression(x[t]),main = "The Ornstein Uhlenbeck Process",cex.lab=1.5,ylim = c(0,3))
+ l <- sim_OU_EM(1000, dt.sim, dt.obs, pars,3)
+ .data <- l$.data
+ x <- l$x
+ points(.data$t,.data$y,type = "l",col="green")
+ l <- sim_OU_EM(1000, dt.sim, dt.obs, pars,3)
+ .data <- l$.data
+ x <- l$x
+ points(.data$t,.data$y,type = "l",col="blue")
+ l <- sim_OU_EM(1000, dt.sim, dt.obs, pars,3)
+ .data <- l$.data
+ x <- l$x
+ points(.data$t,.data$y,type = "l",col="red")
+ l <- sim_OU_EM(1000, dt.sim, dt.obs, pars,3)
+ .data <- l$.data
+ x <- l$x
+ points(.data$t,.data$y,type = "l",col="orange")
 #to easy change the start-parameters c(theta, mu, sigma_x, sigma_y,x0)
 init_pars <- c(1, 1.5, 1e-1, 1e-1, 10)
 

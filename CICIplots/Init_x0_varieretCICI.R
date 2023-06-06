@@ -23,10 +23,14 @@ imu <- c(2,3)
 itheta <- c(1,4)
 isx <- c(3,1)
 isy <- c(4,2)
-int_x0 <-c(-1.0, 0.5, 2.0, 3, 3.5, 5.0, 6.5, 8.0, 9.5, 11.0)
+int_x0 <- seq(-1.5,12,1.5)
 
 
-load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/small500/init_x0_varieret_100_C.RData")
+load("C:/Users/bruger/OneDrive/Skrivebord/Speciale/Speciale-git/true data/init_x0_varieret_100.RData")
+poOLD <- parms_org
+sdOLD <- sd_org
+poTMB <- parms_tmb
+sdTMB <- sd_tmb
 
 apply(is.na(sdOLD[,1,]),2,sum)
 apply(is.na(sdTMB[,1,]),2,sum)
@@ -74,7 +78,7 @@ points(int_x0,apply(exp(poTMB[,4,]),2,mean),col="blue",pch=8)
 abline(h =0.01)
 
 plot(int_x0,apply(exp(poOLD[,2,]),2,sd),pch=15, col="red",ylab = expression(paste('Sd of estimated vaue of ',bold(sigma[y]))),xlab = expression(paste('Initial vale of ', x[0])))
-legend("topleft",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
+legend("left",c('Ctsmr','CtsmrTMB'),pch=c(15,8),col=c('red','blue'))
 points(int_x0,apply(exp(poTMB[,4,]),2,sd),col="blue",pch=8)
 
 
